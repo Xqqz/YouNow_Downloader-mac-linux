@@ -91,6 +91,7 @@ function userDownloadMenu()
         local user_id=`xidel -q ./_temp/${user_name}.json -e '$json("userId")'`
         local error=`xidel -q ./_temp/${user_name}.json -e '$json("errorCode")'`
         local errorMsg=`xidel -q ./_temp/${user_name}.json -e '$json("errorMsg")'`
+        #echo Error code: $error
 
         if [ "${error}" == "101" ]
         then
@@ -99,12 +100,12 @@ function userDownloadMenu()
             echo " "
             return
 
-        elif [ "${error}" == "0" ]; then
+        elif [ "${error}" == "206" ]; then
+            echo "What would you like to do: download past (B)roadcasts or download a (M)oment? (B / M)"
+
+         else
             echo "[LIVE] ${user_name} is broadcasting now!"
             echo "What would you like to do: Capture (L)ive Broadcast, download past (B)roadcasts, or download a (M)oment? (L / B / M)"
-
-        else    
-            echo "What would you like to do: download past (B)roadcasts or download a (M)oment? (B / M)"
         fi
 
         read user_action
