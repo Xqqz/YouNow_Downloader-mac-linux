@@ -170,6 +170,7 @@ function downloadPreviousBroadcastsMenu()
 
     local ex="false"
     local idx=1
+    local startTime=0
     local videos
 
     while [ "$ex" == "false" ]
