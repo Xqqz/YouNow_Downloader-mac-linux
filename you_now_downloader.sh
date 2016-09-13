@@ -1,4 +1,22 @@
 #!/bin/bash
+#| 1.0   @nikisdro             [ 2015-07-25 ] |"
+#|       * Windows script for YN downloading  |"
+#|                                            |"
+#| 1.1   truethug              [ 2016-02-05 ] |"
+#|       * Extend script to linux/ mac        |"
+#|                                            |"
+#| 1.2   IcedPenguin           [ 2016-05-28 ] |"
+#|       * Fix for new YN streaming format    |"
+#|                                            |"
+#| 1.3   IcedPenguin           [ 2016-06-?? ] |"
+#|       * Updated the menuing system         |"
+#|       * Added moment support               |"
+#|                                            |"
+#| 1.4  truethug               [ 2016-06-07 ] |"
+#|      * Fixed Linux supprt                  |"
+#| 1.5  throwaway404           [ 2016-08-31 ] |"
+#|      * Fixed Api link                      |"
+#+--------------------------------------------+"
 
 verbose=false
 
@@ -82,7 +100,7 @@ function userDownloadMenu()
         elif [ "${error}" == "206" ]; then
             echo "What would you like to do: download past (B)roadcasts or download a (M)oment? (B / M)"
 
-         else
+        else
             echo "[LIVE] ${user_name} is broadcasting now!"
             echo "What would you like to do: Capture (L)ive Broadcast, download past (B)roadcasts, or download a (M)oment? (L / B / M)"
         fi
