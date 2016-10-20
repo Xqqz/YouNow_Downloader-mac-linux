@@ -140,7 +140,7 @@ function downloadLiveBroadcast()
     local app=`echo $temp | cut -d' ' -f2`
     local stream=`echo $temp | cut -d' ' -f3`
     local ddate=`date +%h_%d,%G_%T`
-    local filename=$(findNextAvailableFileName ${user_name} "live" ${broadcast_id} "flv" ${ddate})
+    local filename=$(findNextAvailableFileName ${user_name} "flv" ${ddate})
 
     if [ ! -d "./videos/${user_name}" ]
     then
@@ -241,18 +241,11 @@ function findNextAvailableFileName()
 {
     local timestamp=$(date +%s)
     local user_name=$1
-    local video_type=$2
-    local video_id=$3
-    local extension=$4
-    local ddate=$5
-    local append="a"
+    local extension=$2
+    local ddate=$3
 
-    local base_video_name=${user_name}_${video_type}_${video_id}_${ddate}_T${timestamp}
+    local base_video_name=${user_name}_${ddate}_T${timestamp}
     
-    while [ -e "${base_video_name}${extension}" ]; do
-        base_video_name="${base_video_name}${append}"
-    done
-
     base_video_name="${base_video_name}.${extension}"
     echo ${base_video_name}
 }
@@ -290,7 +283,7 @@ function downloadVideo()
     fi
 
     # find a unique file name for the download
-    local file_name=$(findNextAvailableFileName ${user_name} "broadcast" ${broadcast_id} "mkv" ${ddate})
+    local file_name=$(findNextAvailableFileName ${user_name} "mkv" ${ddate})
     echo "user_name: ${user_name}"
     echo "broadcast"
     echo "broadcast_id: ${broadcast_id}"
