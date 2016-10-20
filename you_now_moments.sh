@@ -146,7 +146,7 @@ function downloadMoment()
 
     mkdir -p "./videos/$user_name"
 
-    local filename=$(findNextAvailableFileName ${user_name} "${broadcast_id}_moment" ${moment_id} "mkv")
+    local filename=$(findNextAvailableFileName ${user_name} "mkv" ${moment_id})
 
     # Execute the command
     if [ "$mac" == "" ] 
