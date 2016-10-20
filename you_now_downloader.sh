@@ -139,7 +139,8 @@ function downloadLiveBroadcast()
     local host=`echo $temp | cut -d' ' -f1`
     local app=`echo $temp | cut -d' ' -f2`
     local stream=`echo $temp | cut -d' ' -f3`
-    local filename=$(findNextAvailableFileName ${user_name} "live" ${broadcast_id} "flv")
+    local ddate=`date +%h_%d,%G_%T`
+    local filename=$(findNextAvailableFileName ${user_name} "live" ${broadcast_id} "flv" ${ddate})
 
     if [ ! -d "./videos/${user_name}" ]
     then
@@ -188,6 +189,7 @@ function downloadPreviousBroadcastsMenu()
                    current=""
                    echo ${idx} ${length} ${ddate} - ${broadcast_id}
                    videos[${idx}]=${broadcast_id}
+                   dates[${idx}]=`echo ${ddate} | sed "s/ /_/g"`
                    idx=$((idx + 1))
                 fi
             done < "./_temp/${user_name}_list.txt"
@@ -207,7 +209,7 @@ function downloadPreviousBroadcastsMenu()
                 then
                     for i in `seq 1 ${#videos[@]}`
                     do
-                        downloadVideo "${user_name}" "$i" "${videos[$i]}"
+                        downloadVideo "${user_name}" "$i" "${videos[$i]}" "${dates[$i]}"
                     done
                 fi
 
@@ -215,7 +217,7 @@ function downloadPreviousBroadcastsMenu()
                 do
                     current=`echo $input | cut -d',' -f1`
                     input=`echo $input | cut -d',' -f2-`  
-                    downloadVideo "${user_name}" "${num1}" "${videos[${current}]}"
+                    downloadVideo "${user_name}" "${num1}" "${videos[${current}]}" "${dates[${current}]}"
                     num1=$((num1 + 1))
                 done
                 startTime=$(( startTime  + 10 ))
@@ -242,9 +244,10 @@ function findNextAvailableFileName()
     local video_type=$2
     local video_id=$3
     local extension=$4
+    local ddate=$5
     local append="a"
 
-    local base_video_name=${user_name}_${video_type}_${video_id}_T${timestamp}
+    local base_video_name=${user_name}_${video_type}_${video_id}_${ddate}_T${timestamp}
     
     while [ -e "${base_video_name}${extension}" ]; do
         base_video_name="${base_video_name}${append}"
@@ -264,6 +267,7 @@ function downloadVideo()
     local user_name=$1
     local dirr=$1_$2
     local broadcast_id=$3
+    local ddate=$4
 
     mkdir -p "./_temp/${dirr}"
     mkdir -p "./videos/${user_name}"
@@ -286,7 +290,7 @@ function downloadVideo()
     fi
 
     # find a unique file name for the download
-    local file_name=$(findNextAvailableFileName ${user_name} "broadcast" ${broadcast_id} "mkv")
+    local file_name=$(findNextAvailableFileName ${user_name} "broadcast" ${broadcast_id} "mkv" ${ddate})
     echo "user_name: ${user_name}"
     echo "broadcast"
     echo "broadcast_id: ${broadcast_id}"
