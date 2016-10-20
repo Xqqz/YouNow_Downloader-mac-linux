@@ -354,5 +354,5 @@ mainProgramLoop
 echo "Thanks for using the downloader tool. Have a nice day."
 
 # clean up all the temp files.
-rm -rf ./_temp/* 2>/dev/null 
+rm -rf ./_temp/ 2>/dev/null 
 ###############################################################
