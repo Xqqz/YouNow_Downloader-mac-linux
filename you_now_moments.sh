@@ -2,7 +2,7 @@
 
 declare -a moments # bash don't support mutlideminsional arrays. use a row/ columm offset approach instead.
 declare moments_count
-columnsM=4
+columnsM=5
 id=44
 
 # Handle building the menu and user inputs for displaying the moments avialable
@@ -42,7 +42,7 @@ function downloadMomentsMenu()
                 else
                     moments_to_download=( )
                     if [ "$input_moment" == "all" ]; then
-                        IFS=', ' read -r -a moments_to_download <<< "${moments[ $[ ${input_broadcast} * ${columnsM} + 3 ] ]}"
+                        IFS=', ' read -r -a moments_to_download <<< "${moments[ $[ ${input_broadcast} * ${columnsM} + 4 ] ]}"
                     else
                         IFS=', ' read -r -a moments_to_download <<< "${input_moment}"
                     fi
@@ -66,11 +66,11 @@ function downloadMomentsMenu()
 function displayUserBroadcastWithMoments() 
 {
     printf "Broadcasts with Moments Available for $user_name \n"
-    printf "    ID    Broadcast id   Moment count"
+    printf "    ID    Broadcast id              Date           Moment count"
     local counter="0"
     while [ $counter -lt "${moments_count}" ]
     do
-        printf "  %4s    %10s         %3s \n" ${moments[$[ $counter * ${columnsM} + 0 ]]} ${moments[$[ $counter * ${columnsM} + 1 ]]} ${moments[$[ $counter * ${columnsM} + 2 ]]}
+        printf "  %4s    %10s        %10s      %3s \n" ${moments[$[ $counter * ${columnsM} + 0 ]]} ${moments[$[ $counter * ${columnsM} + 1 ]]} `date -d @${moments[$[ $counter * ${columnsM} + 2 ]]} +%h_%d,%G_%T 2>/dev/null` ${moments[$[ $counter * ${columnsM} + 3 ]]}
         counter=$[$counter + 1]
     done
 }
@@ -82,7 +82,7 @@ function displayBroadcastsMoments()
 {
     local broadcast_index=$1
     printf " Moment_id\n"
-    local moment_id_collection=${moments[ $[ ${broadcast_index} * ${columnsM} + 3 ] ]}
+    local moment_id_collection=${moments[ $[ ${broadcast_index} * ${columnsM} + 4 ] ]}
 
     IFS=','
     for i in $moment_id_collection
@@ -109,6 +109,9 @@ function parseMomentJson()
     ############# read the moment information retrieved from the server #############
     local broadcast_ids=$(xidel -q -e '($json).items()/join((broadcastId),"-")' "./$moment_json_file" | tr "\n" " ")
     broadcast_ids=( $broadcast_ids )
+
+    local ddate=$(xidel -q -e '($json).items()/join((created),"-")' "./$moment_json_file" | tr "\n" " ")
+    ddate=( $ddate )
     
     ############# for each broadcast #############
     while [ $counter -lt "${#broadcast_ids[@]}" ]
@@ -124,8 +127,9 @@ function parseMomentJson()
             # four entries per broadcast
             moments[$[ ${index} * ${columnsM} + 0 ]]="${index}"
             moments[$[ ${index} * ${columnsM} + 1 ]]="${broadcast_ids[$counter]}"
-            moments[$[ ${index} * ${columnsM} + 2 ]]="${broadcast_moment_count}"
-            moments[$[ ${index} * ${columnsM} + 3 ]]=$(IFS=, ; echo "${broadcast_moment_ids[*]}")
+            moments[$[ ${index} * ${columnsM} + 2 ]]="${ddate[$counter]}"
+            moments[$[ ${index} * ${columnsM} + 3 ]]="${broadcast_moment_count}"
+            moments[$[ ${index} * ${columnsM} + 4 ]]=$(IFS=, ; echo "${broadcast_moment_ids[*]}")
             index=$[$index + 1]
         fi
         counter=$[$counter + 1]
