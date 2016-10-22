@@ -1,4 +1,5 @@
 #!/bin/bash
+mac=`uname -a | grep -i darwin`
 
 declare -a moments # bash don't support mutlideminsional arrays. use a row/ columm offset approach instead.
 declare moments_count
@@ -70,7 +71,12 @@ function displayUserBroadcastWithMoments()
     local counter="0"
     while [ $counter -lt "${moments_count}" ]
     do
-        printf "  %4s    %10s        %10s      %3s \n" ${moments[$[ $counter * ${columnsM} + 0 ]]} ${moments[$[ $counter * ${columnsM} + 1 ]]} `date -d @${moments[$[ $counter * ${columnsM} + 2 ]]} +%h_%d,%G_%T 2>/dev/null` ${moments[$[ $counter * ${columnsM} + 3 ]]}
+        if [ "$mac" == "" ]
+        then
+           printf "  %4s    %10s        %10s      %3s \n" ${moments[$[ $counter * ${columnsM} + 0 ]]} ${moments[$[ $counter * ${columnsM} + 1 ]]} `date -d @${moments[$[ $counter * ${columnsM} + 2 ]]} +%h_%d,%G_%T 2>/dev/null` ${moments[$[ $counter * ${columnsM} + 3 ]]}
+        else
+           printf "  %4s    %10s        %10s      %3s \n" ${moments[$[ $counter * ${columnsM} + 0 ]]} ${moments[$[ $counter * ${columnsM} + 1 ]]} `date -r ${moments[$[ $counter * ${columnsM} + 2 ]]} +%h_%d,%G_%T 2>/dev/null` ${moments[$[ $counter * ${columnsM} + 3 ]]}
+        fi
         counter=$[$counter + 1]
     done
 }
@@ -112,7 +118,8 @@ function parseMomentJson()
 
     local ddate=$(xidel -q -e '($json).items()/join((created),"-")' "./$moment_json_file" | tr "\n" " ")
     ddate=( $ddate )
-    
+#############
+echo $ddate    
     ############# for each broadcast #############
     while [ $counter -lt "${#broadcast_ids[@]}" ]
     do
