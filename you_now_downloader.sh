@@ -123,6 +123,7 @@ function userDownloadMenu()
         else
             return # user did not enter a command, return to previous menu.
         fi
+        rm ./_temp/${user_name}.json
     done
 }
 
@@ -154,6 +155,7 @@ function downloadLiveBroadcast()
         echo "cd `pwd` ; rtmpdump -v -o ./videos/${user_name}/${filename} -r rtmp://$host$app/$stream" > "./_temp/${filename}.command"
         chmod +x "./_temp/${filename}.command"
         open "./_temp/${filename}.command"
+        rm ./_temp/${filename}.command
     fi
     echo " OK! Started recording in a separate window."
 }
@@ -175,6 +177,8 @@ function downloadPreviousBroadcastsMenu()
     do
         wget --no-check-certificate -q "http://www.younow.com/php/api/post/getBroadcasts/startFrom=$startTime/channelId=${user_id}" -O "./_temp/${user_name}_json.json"
         xidel -q -e '($json).posts().media.broadcast/join((videoAvailable,broadcastId,broadcastLengthMin,ddateAired),"-")' "./_temp/${user_name}_json.json" > "./_temp/${user_name}_list.txt"
+        rm ./_temp/${user_name}_json.json
+
         if [  -f "./_temp/${user_name}_list.txt" ]
         then
             echo "You can download these broadcasts:"
@@ -193,6 +197,7 @@ function downloadPreviousBroadcastsMenu()
                    idx=$((idx + 1))
                 fi
             done < "./_temp/${user_name}_list.txt"
+            rm ./_temp/${user_name}_list.txt
 
             echo "Type comma separated numbers, \"all\" to download everything,"
             echo "\"n\" to list next 10 broadcasts or leave blank to return: "
@@ -273,6 +278,9 @@ function downloadVideo()
     local stream=`xidel -q ./_temp/${dirr}/rtmp.json -e '$json("stream")'`
     local hls=`xidel -q ./_temp/${dirr}/rtmp.json -e '$json("hls")'`
 
+    rm ./_temp/${dirr}/session.json
+    rm ./_temp/${dirr}/rtmp.json
+
     if $verbose ; then
         echo "--- stream information ---"
         echo "session: $session"
@@ -307,6 +315,7 @@ function downloadVideo()
         
         chmod +x "./_temp/${file_name}.command"
         open "./_temp/${file_name}.command"
+        rm ./_temp/${file_name}.command
     fi
 }
 
