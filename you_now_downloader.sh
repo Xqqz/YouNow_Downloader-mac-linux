@@ -181,7 +181,7 @@ function downloadPreviousBroadcastsMenu()
 
         if [  -f "./_temp/${user_name}_list.txt" ]
         then
-            echo -e "   ID  Length            Date            Broadcast id\n"
+            echo -e "    ID  Length            Date               Broadcast id"
             while read line 
             do
                 available=`echo $line | cut -d'-' -f1`
@@ -191,8 +191,7 @@ function downloadPreviousBroadcastsMenu()
                 if [ "$available" == "1" ]
                 then
                    current=""
-#                   echo ${idx} ${length} ${ddate} - ${broadcast_id}
-                   printf " %4s   %5s  %26s %1s %10s \n" ${idx} ${length} ${ddate} ${broadcast_id}
+                   printf " %4s   %5s  %26s %1s %10s \n" ${idx} ${length} ${ddate} - ${broadcast_id}
                    videos[${idx}]=${broadcast_id}
                    dates[${idx}]=`echo ${ddate}`
                    idx=$((idx + 1))
