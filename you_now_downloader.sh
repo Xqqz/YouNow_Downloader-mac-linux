@@ -90,7 +90,7 @@ function userDownloadMenu()
         local errorMsg=`xidel -q ./_temp/${user_name}.json -e '$json("errorMsg")'`
         #echo Error code: $error
 
-        if [ "${error}" == "101" -o ! -s ./_temp/${user_name}.json ]
+        if [ "${error}" == "101" -o ! -s ./_temp/${user_name}.json  -o "${user_id}" == "" ]
         then
             echo "There was a problem with the provided user name."
             echo "    Error: $errorMsg"
