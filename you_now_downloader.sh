@@ -292,10 +292,10 @@ function downloadVideo()
 
     # find a unique file name for the download
     local file_name=$(findNextAvailableFileName ${user_name} "mkv" ${ddate})
-    echo "user_name: ${user_name}"
-    echo "broadcast"
-    echo "broadcast_id: ${broadcast_id}"
-    echo "mkv"
+#    echo "user_name: ${user_name}"
+#    echo "broadcast"
+#    echo "broadcast_id: ${broadcast_id}"
+#    echo "mkv"
     echo "file_name: ${file_name}"
 
     # Execute the command
