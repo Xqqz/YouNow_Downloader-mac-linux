@@ -50,7 +50,7 @@ function downloadMomentsMenu()
                     fi
 
                     for moment_id in ${moments_to_download[@]}; do
-                        echo "downloadMoment <$user_name> <$broadcast_id> <$moment_id>"
+#                        echo "downloadMoment <$user_name> <$broadcast_id> <$moment_id>"
                         downloadMoment ${user_name} ${broadcast_id} ${moment_id}
                     done
                 fi
