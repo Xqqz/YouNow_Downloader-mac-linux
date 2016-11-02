@@ -155,7 +155,7 @@ function downloadLiveBroadcast()
         echo "cd `pwd` ; rtmpdump -v -o ./videos/${user_name}/${filename} -r rtmp://$host$app/$stream" > "./_temp/${filename}.command"
         chmod +x "./_temp/${filename}.command"
         open "./_temp/${filename}.command"
-        rm ./_temp/${filename}.command
+#        rm ./_temp/${filename}.command
     fi
     echo " OK! Started recording in a separate window."
 }
@@ -315,7 +315,7 @@ function downloadVideo()
         
         chmod +x "./_temp/${file_name}.command"
         open "./_temp/${file_name}.command"
-        rm ./_temp/${file_name}.command
+#        rm ./_temp/${file_name}.command
     fi
 }
 
