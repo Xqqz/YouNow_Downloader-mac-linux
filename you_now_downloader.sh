@@ -83,8 +83,7 @@ function userDownloadMenu()
 
     while : ; do
         echo " "
-        wget --no-check-certificate -q "http://bcm.younow.com/broadcast/info/user=${user_name}" -O "./_temp/${user_name}.json"
-
+        wget --no-check-certificate -q "https://api.younow.com/php/api/broadcast/info/curId=0/user=${user_name}" -O "./_temp/${user_name}.json"
         local user_id=`xidel -q ./_temp/${user_name}.json -e '$json("userId")'`
         local error=`xidel -q ./_temp/${user_name}.json -e '$json("errorCode")'`
         local errorMsg=`xidel -q ./_temp/${user_name}.json -e '$json("errorMsg")'`
@@ -270,7 +269,6 @@ function downloadVideo()
     mkdir -p "./_temp/${dirr}"
     mkdir -p "./videos/${user_name}"
 
-    wget --no-check-certificate -q "http://www.younow.com/php/api/younow/user" -O "./_temp/${dirr}/session.json"
     wget --no-check-certificate -q "http://www.younow.com/php/api/broadcast/videoPath/broadcastId=${broadcast_id}" -O "./_temp/${dirr}/rtmp.json"
     
     local session=`xidel -q ./_temp/${dirr}/rtmp.json -e '$json("session")'`
@@ -278,7 +276,6 @@ function downloadVideo()
     local stream=`xidel -q ./_temp/${dirr}/rtmp.json -e '$json("stream")'`
     local hls=`xidel -q ./_temp/${dirr}/rtmp.json -e '$json("hls")'`
 
-    rm ./_temp/${dirr}/session.json
     rm ./_temp/${dirr}/rtmp.json
 
     if $verbose ; then
