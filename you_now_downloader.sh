@@ -325,7 +325,12 @@ function checkDependencies()
             echo "Dependcy missing: ${i}"
             if [ "$mac" == "" ]
             then
-               echo "Please apt-get or yum install ${i}"
+               if [ "${i}" == "xidel" ]
+               then
+                  echo "Please install ${i} http://www.videlibri.de/xidel.html#downloads"
+               else
+                  echo "Please apt-get or yum install ${i}"
+               fi         
             else
                if [ "${i}" == "xidel" ]
                then
