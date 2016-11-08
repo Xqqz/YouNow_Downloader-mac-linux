@@ -311,11 +311,7 @@ function downloadVideo()
 
 function checkDependencies()
 {
-    if [ "$mac" == "" ]; then
-        dependencies=( "wine" "xidel" "wget" "ffmpeg")
-    else
-        dependencies=( "rtmpdump" "xidel" "wget" "ffmpeg")
-    fi
+    dependencies=( "rtmpdump" "xidel" "wget" "ffmpeg")
 
     for i in "${dependencies[@]}"
     do
@@ -326,14 +322,14 @@ function checkDependencies()
             then
                if [ "${i}" == "xidel" ]
                then
-                  echo "Please install ${i} http://www.videlibri.de/xidel.html#downloads"
+                  echo "Please install ${i} 0.8 https://sourceforge.net/projects/videlibri/files/Xidel/Xidel%200.8.4/"
                else
                   echo "Please apt-get or yum install ${i}"
                fi         
             else
                if [ "${i}" == "xidel" ]
                then
-                  echo "Please install ${i} http://www.videlibri.de/xidel.html#downloads"
+                  echo "Please install ${i} 0.8 http://www.videlibri.de/xidel.html#downloads"
                else
                   echo "Please brew install ${i}"
                fi         
@@ -352,7 +348,8 @@ mac=`uname -a | grep -i darwin`
 if [ "$mac" == "" ]
 then
    # using wine to run an old version since the latest doesn't work with younow
-   rtmp="wine ./_bin/rtmpdump.exe"
+#   rtmp="wine ./_bin/rtmpdump.exe"
+   rtmp=rtmpdump
 fi
 
 # Locations for working files and final videos
