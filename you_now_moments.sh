@@ -162,7 +162,7 @@ function downloadMoment()
     # Execute the command
     if [ "$mac" == "" ] 
     then
-        xterm -e "ffmpeg -i \"https://hls.younow.com/momentsplaylists/live/${moment_id}/${moment_id}.m3u8\"  -c:v copy \"./videos/${user_name}/moments/${broadcast_id}/${filename}\";bash;exit" &
+        xterm -e "ffmpeg -i \"https://hls.younow.com/momentsplaylists/live/${moment_id}/${moment_id}.m3u8\"  -c:v copy \"./videos/${user_name}/moments/${broadcast_id}/${filename}\";exit" &
     else
         echo "cd `pwd`;  ffmpeg -hide_banner -y -loglevel panic -stats -i \"https://hls.younow.com/momentsplaylists/live/${moment_id}/${moment_id}.m3u8\"  -c copy \"./videos/${user_name}//moments/${broadcast_id}/${filename}\" "  > "./_temp/${filename}_moment.command"
         chmod +x "./_temp/${filename}_moment.command"

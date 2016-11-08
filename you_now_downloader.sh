@@ -149,7 +149,7 @@ function downloadLiveBroadcast()
 
     if [ "$mac" == "" ]
     then
-        xterm -e "$rtmp -v -o ./videos/${user_name}/${filename} -r rtmp://$host$app/$stream; bash;exit" &
+        xterm -e "$rtmp -v -o ./videos/${user_name}/${filename} -r rtmp://$host$app/$stream;exit" &
     else
         echo "cd `pwd` ; rtmpdump -v -o ./videos/${user_name}/${filename} -r rtmp://$host$app/$stream" > "./_temp/${filename}.command"
         chmod +x "./_temp/${filename}.command"
@@ -299,9 +299,9 @@ function downloadVideo()
     if [ "$mac" == "" ] 
     then
         if [[ "$hls" != "" ]]; then
-            xterm -e "ffmpeg -i \"$hls\"  -c:v copy \"./videos/${user_name}/${file_name}\" ;bash;exit" & 
+            xterm -e "ffmpeg -i \"$hls\"  -c:v copy \"./videos/${user_name}/${file_name}\" ;exit" & 
         else
-            xterm -e "$rtmp -v -o \"./videos/${user_name}/${file_name}\" -r \"$server$stream?sessionId=$session\" -p \"http://www.younow.com/\";bash;exit" &
+            xterm -e "$rtmp -v -o \"./videos/${user_name}/${file_name}\" -r \"$server$stream?sessionId=$session\" -p \"http://www.younow.com/\";exit" &
         fi
     else
         if [[ "$hls" != "" ]]; then
