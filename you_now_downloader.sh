@@ -29,13 +29,6 @@ echo "|       This script helps you download       |"
 echo "|   YouNow.com broadcasts and live streams   |"
 echo "+--------------------------------------------+"
 echo ""
-echo "This script relise on several binary files located in ./_bin. You are responsible for finding these files. Apt-get or brew install them."
-echo "    file: ffmpeg"
-echo "    file: rtmpdump"
-echo "    file: xidel"
-echo "    file: wget"
-echo ""
-echo "Paste broadcast username below (right click - Paste) and press Enter"
 
 function mainProgramLoop() {
     local status="running"
@@ -320,7 +313,7 @@ function downloadVideo()
 function checkDependencies()
 {
     if [ "$mac" == "" ]; then
-        dependencies=( "xidel" "wget" "ffmpeg")
+        dependencies=( "wine" "xidel" "wget" "ffmpeg")
     else
         dependencies=( "rtmpdump" "xidel" "wget" "ffmpeg")
     fi
@@ -330,7 +323,17 @@ function checkDependencies()
         :
         if ! hash ${i} 2>/dev/null; then
             echo "Dependcy missing: ${i}"
-            echo "Please ensure all dependencies are on the PATH before launching the application."
+            if [ "$mac" == "" ]
+            then
+               echo "Please apt-get or yum install ${i}"
+            else
+               if [ "${i}" == "xidel" ]
+               then
+                  echo "Please install ${i} http://www.videlibri.de/xidel.html#downloads"
+               else
+                  echo "Please brew install ${i}"
+               fi         
+            fi
             echo ""
             exit 1
         fi
