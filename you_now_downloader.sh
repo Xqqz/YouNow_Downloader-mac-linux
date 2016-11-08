@@ -28,7 +28,6 @@ echo "+--------------------------------------------+"
 echo "|       This script helps you download       |"
 echo "|   YouNow.com broadcasts and live streams   |"
 echo "+--------------------------------------------+"
-echo ""
 
 function mainProgramLoop() {
     local status="running"
