@@ -117,7 +117,7 @@ function parseMomentJson()
     ############# read the moment information retrieved from the server #############
     broadcast_ids=$(xidel -q -e '($json).items()/join((broadcastId),"-")' "./$moment_json_file" | tr "\n" " ")
     broadcast_ids=( $broadcast_ids )
-echo HERE $broadcast_ids
+
     local ddate=$(xidel -q -e '($json).items()/join((created),"-")' "./$moment_json_file" | tr "\n" " ")
     ddate=( $ddate )
 
