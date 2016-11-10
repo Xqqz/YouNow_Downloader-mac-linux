@@ -48,6 +48,7 @@ function downloadMomentsMenu()
                     else
                         IFS=', ' read -r -a moments_to_download <<< "${input_moment}"
                     fi
+                    IFS=' '                    
 
                     for moment_id in ${moments_to_download[@]}; do
 #                        echo "downloadMoment <$user_name> <$broadcast_id> <$moment_id>"
@@ -114,9 +115,9 @@ function parseMomentJson()
     local index="1"
 
     ############# read the moment information retrieved from the server #############
-    local broadcast_ids=$(xidel -q -e '($json).items()/join((broadcastId),"-")' "./$moment_json_file" | tr "\n" " ")
+    broadcast_ids=$(xidel -q -e '($json).items()/join((broadcastId),"-")' "./$moment_json_file" | tr "\n" " ")
     broadcast_ids=( $broadcast_ids )
-
+echo HERE $broadcast_ids
     local ddate=$(xidel -q -e '($json).items()/join((created),"-")' "./$moment_json_file" | tr "\n" " ")
     ddate=( $ddate )
 
