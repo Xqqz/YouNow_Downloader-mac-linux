@@ -322,14 +322,14 @@ function checkDependencies()
             then
                if [ "${i}" == "xidel" ]
                then
-                  echo "Please install ${i} 0.8 https://sourceforge.net/projects/videlibri/files/Xidel/Xidel%200.8.4/"
+                  echo "Please install ${i} 0.8 _bin/xidel_0.8.4-1_amd64.deb or https://sourceforge.net/projects/videlibri/files/Xidel/Xidel%200.8.4/"
                else
                   echo "Please apt-get or yum install ${i}"
                fi         
             else
                if [ "${i}" == "xidel" ]
                then
-                  echo "Please install ${i} 0.8 http://www.videlibri.de/xidel.html#downloads"
+                  echo "Please install ${i} 0.8 _bin/xidel.zip or http://www.videlibri.de/xidel.html#downloads"
                else
                   echo "Please brew install ${i}"
                fi         
