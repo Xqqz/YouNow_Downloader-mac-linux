@@ -207,15 +207,17 @@ function downloadPreviousBroadcastsMenu()
                     do
                         downloadVideo "${user_name}" "$i" "${videos[$i]}" "${dates[$i]}"
                     done
-                fi
 
-                while [ "$input" != "$current" ]
-                do
-                    current=`echo $input | cut -d',' -f1`
-                    input=`echo $input | cut -d',' -f2-`  
-                    downloadVideo "${user_name}" "${num1}" "${videos[${current}]}" "${dates[${current}]}"
-                    num1=$((num1 + 1))
-                done
+                else
+                    while [ "$input" != "$current" ]
+                    do
+                        current=`echo $input | cut -d',' -f1`
+                        input=`echo $input | cut -d',' -f2-`  
+                        downloadVideo "${user_name}" "${num1}" "${videos[${current}]}" "${dates[${current}]}"
+                        num1=$((num1 + 1))
+                    done
+                fi
+                unset $videos
                 startTime=$(( startTime  + 10 ))
             fi 
         else
