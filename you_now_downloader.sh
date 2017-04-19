@@ -37,11 +37,12 @@ function mainProgramLoop() {
         echo "Enter username (leave blank to quit):" 
         read entered_name
 
-        if [ -z ${entered_name} ]; then
+        web=`echo $entered_name | grep 'younow.com'`
+        if [ -z ${entered_name} ]
+        then
             status="exit"
 
-        web=`echo $entered_name | grep 'younow.com'`
-        elif [ ! -z ${web} ]; then
+        elif [ "${web}" != "" ]; then
             user=`echo ${entered_name} | cut -d'/' -f4`
             userDownloadMenu ${user}
         else
