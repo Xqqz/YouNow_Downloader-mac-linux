@@ -73,12 +73,7 @@ function displayUserBroadcastWithMoments()
     local counter="0"
     while [ $counter -lt "${moments_count}" ]
     do
-        if [ "$mac" == "" ]
-        then
-           printf "  %4s    %10s        %10s      %3s \n" ${moments[$[ $counter * ${columnsM} + 0 ]]} ${moments[$[ $counter * ${columnsM} + 1 ]]} `date -d @${moments[$[ $counter * ${columnsM} + 2 ]]} +%h_%d_%G_%T 2>/dev/null` ${moments[$[ $counter * ${columnsM} + 3 ]]}
-        else
-           printf "  %4s    %10s        %10s      %3s \n" ${moments[$[ $counter * ${columnsM} + 0 ]]} ${moments[$[ $counter * ${columnsM} + 1 ]]} `date -r ${moments[$[ $counter * ${columnsM} + 2 ]]} +%h_%d_%G_%T 2>/dev/null` ${moments[$[ $counter * ${columnsM} + 3 ]]}
-        fi
+           printf "  %4s    %10s        %10s      %3s \n" ${moments[$[ $counter * ${columnsM} + 0 ]]} ${moments[$[ $counter * ${columnsM} + 1 ]]} ${moments[$[ $counter * ${columnsM} + 2 ]]} ${moments[$[ $counter * ${columnsM} + 3 ]]}
         counter=$[$counter + 1]
     done
 }
@@ -135,7 +130,13 @@ function parseMomentJson()
             # four entries per broadcast
             moments[$[ ${index} * ${columnsM} + 0 ]]="${index}"
             moments[$[ ${index} * ${columnsM} + 1 ]]="${broadcast_ids[$counter]}"
-            moments[$[ ${index} * ${columnsM} + 2 ]]="${ddate[$counter]}"
+            if [ "$mac" == "" ]
+            then
+                moments[$[ ${index} * ${columnsM} + 2 ]]="`date -d @${ddate[$counter]} +%h_%d_%G_%T 2>/dev/null`"
+            else
+                moments[$[ ${index} * ${columnsM} + 2 ]]="`date -r ${ddate[$counter]} +%h_%d_%G_%T 2>/dev/null`"
+            fi  
+
             moments[$[ ${index} * ${columnsM} + 3 ]]="${broadcast_moment_count}"
             moments[$[ ${index} * ${columnsM} + 4 ]]=$(IFS=, ; echo "${broadcast_moment_ids[*]}")
             index=$[$index + 1]

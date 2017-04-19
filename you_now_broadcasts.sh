@@ -6,8 +6,8 @@ declare moments_count
 columnsM=5
 id=44
 
-# Handle building the menu and user inputs for displaying the moments avialable
-# and allowing the user to download specific moments.
+# Handle building the menu and user inputs for displaying the broadcasts avialable
+# and allowing the user to download specific broadcasts.
 #
 # @param: user name
 # @param: user id
@@ -31,7 +31,6 @@ function downloadPreviousBroadcastsMenu()
             ex="true"
         else
             echo " "
-#            displayBroadcastsMoments $input_broadcast
             broadcast_id=${moments[ $[ ${input_broadcast} * ${columnsM} + 1 ] ]}
 
             ddate=${moments[ $[ ${input_broadcast} * ${columnsM} + 2 ] ]}
@@ -76,32 +75,10 @@ function displayUserBroadcasts()
     local counter="0"
     while [ $counter -lt "${moments_count}" ]
     do
-        if [ "$mac" == "" ]
-        then
-           printf "  %4s    %10s        %10s      %3s \n" ${moments[$[ $counter * ${columnsM} + 0 ]]} ${moments[$[ $counter * ${columnsM} + 1 ]]} `date -d @${moments[$[ $counter * ${columnsM} + 2 ]]} +%h_%d_%G_%T 2>/dev/null` ${moments[$[ $counter * ${columnsM} + 3 ]]}		
-        else
-           printf "  %4s    %10s        %10s      %3s \n" ${moments[$[ $counter * ${columnsM} + 0 ]]} ${moments[$[ $counter * ${columnsM} + 1 ]]} `date -r ${moments[$[ $counter * ${columnsM} + 2 ]]} +%h_%d_%G_%T 2>/dev/null` ${moments[$[ $counter * ${columnsM} + 3 ]]}
-        fi
+           printf "  %4s    %10s        %10s      %3s \n" ${moments[$[ $counter * ${columnsM} + 0 ]]} ${moments[$[ $counter * ${columnsM} + 1 ]]} ${moments[$[ $counter * ${columnsM} + 2 ]]} ${moments[$[ $counter * ${columnsM} + 3 ]]}		
         counter=$[$counter + 1]
     done
 }
-
-# Display the moment_ids which are available for the selected video
-#
-# @param: broadcast index into {moments[@]}
-function displayBroadcastsMoments()
-{
-    local broadcast_index=$1
-    printf " Moment_id\n"
-    local moment_id_collection=${moments[ $[ ${broadcast_index} * ${columnsM} + 4 ] ]}
-
-    IFS=','
-    for i in $moment_id_collection
-    do
-        printf "  %4s \n" ${i} 
-    done
-}
-
 
 # Download information about the user's moments from the server. Make this information
 # available to the moments menuing system via a global variable. (Because bash does not
@@ -138,7 +115,12 @@ function parseBroadcastJson()
             # four entries per broadcast
             moments[$[ ${index} * ${columnsM} + 0 ]]="${index}"
             moments[$[ ${index} * ${columnsM} + 1 ]]="${broadcast_ids[$counter]}"
-            moments[$[ ${index} * ${columnsM} + 2 ]]="${ddate[$counter]}"
+            if [ "$mac" == "" ]
+            then
+                moments[$[ ${index} * ${columnsM} + 2 ]]="`date -d @${ddate[$counter]} +%h_%d_%G_%T 2>/dev/null`"
+            else
+                moments[$[ ${index} * ${columnsM} + 2 ]]="`date -r ${ddate[$counter]} +%h_%d_%G_%T 2>/dev/null`"
+            fi
             moments[$[ ${index} * ${columnsM} + 3 ]]="${broadcast_moment_count}"
             moments[$[ ${index} * ${columnsM} + 4 ]]=$(IFS=, ; echo "${broadcast_moment_ids[*]}")
             index=$[$index + 1]
@@ -148,28 +130,65 @@ function parseBroadcastJson()
     moments_count=${index}
 }
 
-# Download a moment (portion of a video).
-#
+# Function: Download a video.
 # @param: user name
+# @param: video number (numeric order)
 # @param: broadcast id
-# @param: moment id
-function downloadMoment() 
+function downloadVideo()
 {
     local user_name=$1
-    local broadcast_id=$2
-    local moment_id=$3
+    local dirr=$1_$2
+    local broadcast_id=$3
+    local ddate=$4
 
-    mkdir -p "./videos/$user_name/moments/${broadcast_id}"
+    mkdir -p "./_temp/${dirr}"
+    mkdir -p "./videos/${user_name}"
 
-    local filename=$(findNextAvailableFileName ${user_name} "mkv" ${moment_id})
+    wget --no-check-certificate -q "http://www.younow.com/php/api/broadcast/videoPath/broadcastId=${broadcast_id}" -O "./_temp/${dirr}/rtmp.json"
+        
+    local session=`xidel -q ./_temp/${dirr}/rtmp.json -e '$json("session")'`
+    local server=`xidel -q ./_temp/${dirr}/rtmp.json -e '$json("server")'`
+    local stream=`xidel -q ./_temp/${dirr}/rtmp.json -e '$json("stream")'`
+    local hls=`xidel -q ./_temp/${dirr}/rtmp.json -e '$json("hls")'`
+
+    rm ./_temp/${dirr}/rtmp.json
+
+    if $verbose ; then
+        echo "--- stream information ---"
+        echo "session: $session"
+        echo "  sever: $server"
+        echo " stream: $stream"
+        echo "    hls: $hls"
+        echo "--- stream information ---"
+    fi
+
+    # find a unique file name for the download
+    local file_name=$(findNextAvailableFileName ${user_name} "mkv" ${ddate})
+#    echo "user_name: ${user_name}"
+#    echo "broadcast"
+#    echo "broadcast_id: ${broadcast_id}"
+#    echo "mkv"
+    echo "file_name: ${file_name}"
 
     # Execute the command
     if [ "$mac" == "" ] 
     then
-        xterm -e "ffmpeg -i \"https://hls.younow.com/momentsplaylists/live/${moment_id}/${moment_id}.m3u8\"  -c:v copy \"./videos/${user_name}/moments/${broadcast_id}/${filename}\";exit" &
+        if [[ "$hls" != "" ]]; then
+            xterm -e "ffmpeg -i \"$hls\"  -c:v copy \"./videos/${user_name}/${file_name}\" ;exit" & 
+        else
+            xterm -e "$rtmp -v -o \"./videos/${user_name}/${file_name}\" -r \"$server$stream?sessionId=$session\" -p \"http://www.younow.com/\";exit" &
+        fi  
     else
-        echo "cd `pwd`;  ffmpeg -hide_banner -y -loglevel panic -stats -i \"https://hls.younow.com/momentsplaylists/live/${moment_id}/${moment_id}.m3u8\"  -c copy \"./videos/${user_name}//moments/${broadcast_id}/${filename}\" "  > "./_temp/${filename}_moment.command"
-        chmod +x "./_temp/${filename}_moment.command"
-        open "./_temp/${filename}_moment.command"
+        if [[ "$hls" != "" ]]; then
+            echo "cd `pwd`; ffmpeg -i \"$hls\"  -c copy \"./videos/${user_name}/${file_name}\""  > "./_temp/${file_name}.command"
+        else
+            echo "cd `pwd`; rtmpdump -v -o \"./videos/${user_name}/${file_name}\" -r \"$server$stream?sessionId=$session\" -p \"http://www.younow.com/\"" > "./_temp/$filename.command" 
+        fi
+    
+        chmod +x "./_temp/${file_name}.command"
+        open "./_temp/${file_name}.command"
+#        rm ./_temp/${file_name}.command
     fi
 }
+
+
