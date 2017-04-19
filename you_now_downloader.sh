@@ -20,6 +20,7 @@
 
 verbose=false
 
+source ./you_now_broadcasts.sh
 source ./you_now_moments.sh
 
 echo "+--------------------------------------------+"
@@ -75,7 +76,7 @@ function userDownloadMenu()
 
     while : ; do
         echo " "
-        wget --no-check-certificate -q "https://api.younow.com/php/api/broadcast/info/curId=0/user=${user_name}" -O "./_temp/${user_name}.json"
+        wget --no-check-certificate -q "https://api.younow.com/php/api/broadcast/info/user=${user_name}" -O "./_temp/${user_name}.json"
         local user_id=`xidel -q ./_temp/${user_name}.json -e '$json("userId")'`
         local error=`xidel -q ./_temp/${user_name}.json -e '$json("errorCode")'`
         local errorMsg=`xidel -q ./_temp/${user_name}.json -e '$json("errorMsg")'`
@@ -105,7 +106,7 @@ function userDownloadMenu()
 
         elif  [ "${user_action}" == "B" ] || [ "${user_action}" == "b" ]; then
             echo "Broadcast mode"
-            downloadPreviousBroadcastsMenu "${user_id}" "${user_name}"
+            downloadPreviousBroadcastsMenu $user_name $user_id
 
         elif  [ "${user_action}" == "M" ] || [ "${user_action}" == "m" ]; then
             echo "Moment mode"
@@ -154,7 +155,7 @@ function downloadLiveBroadcast()
 
 # @param: user_id
 # @param: user_name
-function downloadPreviousBroadcastsMenu()
+function downloadPreviousBroadcastsMenu2()
 {
     local user_id=$1
     local user_name=$2
@@ -166,9 +167,13 @@ function downloadPreviousBroadcastsMenu()
 
     while [ "$ex" == "false" ]
     do
-        wget --no-check-certificate -q "http://www.younow.com/php/api/post/getBroadcasts/startFrom=$startTime/channelId=${user_id}" -O "./_temp/${user_name}_json.json"
-        xidel -q -e '($json).posts().media.broadcast/join((videoAvailable,broadcastId,broadcastLengthMin,ddateAired),"-")' "./_temp/${user_name}_json.json" > "./_temp/${user_name}_list.txt"
-        rm ./_temp/${user_name}_json.json
+#        wget --no-check-certificate -q "http//cdn.younow.com/php/api/moment/profile/channelId=${user_id}/createdBefore=0/records=20" -O "./_temp/${user_name}_json.json"
+        wget --no-check-certificate -q "https://www.younow.com/php/api/moment/profile/channelId=$user_id}/createdBefore=0/records=20" -O "./_temp/${user_name}_json.json"
+#        xidel -q -e '($json).posts().media.broadcast/join((videoAvailable,broadcastId,broadcastLengthMin,ddateAired),"-")' "./_temp/${user_name}_json.json" > "./_temp/${user_name}_list.txt"
+        local broadcast_ids=$(xidel -q -e '($json).items()/join((broadcastId),"-")' "./$moment_json_file" | tr "\n" " ")
+        broadcast_ids=( $broadcast_ids )
+
+#        rm ./_temp/${user_name}_json.json
 
         if [  -f "./_temp/${user_name}_list.txt" ]
         then
@@ -188,7 +193,7 @@ function downloadPreviousBroadcastsMenu()
                    idx=$((idx + 1))
                 fi
             done < "./_temp/${user_name}_list.txt"
-            rm ./_temp/${user_name}_list.txt
+#            rm ./_temp/${user_name}_list.txt
 
             echo "Type comma separated numbers, \"all\" to download everything,"
             echo "\"n\" to list next 10 broadcasts or leave blank to return: "
